@@ -2,6 +2,7 @@ const db = require("../models");
 const Battle = db.battle;
 
 exports.search = (req, res) => {
+  try{
   fields = {
     king: ["attacker_king", "defender_king"],
     location: "location",
@@ -12,21 +13,24 @@ exports.search = (req, res) => {
   Object.keys(req.query).map((filter) => {
     //check is any filters are applied
 
-    conditions["$and"] = [];
+    
     if (filter === "king") {
       //in case multiple fields are to be queried for one filter
       let a = { $or: [] };
       fields[filter].map((element) => {
         a["$or"].push({ [element]: req.query[filter] });
       });
-      conditions["$and"].push(a);
+      
+      conditions["$and"]?conditions["$and"].push(a):conditions["$and"]=[a];
     } else {
-      //filters with single values
-      conditions["$and"].push({
+      let a={
         [fields[filter]]: req.query[filter],
-      });
+      }
+      //filters with single values
+      conditions["$and"]?conditions["$and"].push(a):conditions["$and"]=[a];
     }
   });
+  console.log(conditions);
   Battle.find(conditions)
     .then((data) => {
       res.send(data);
@@ -34,9 +38,14 @@ exports.search = (req, res) => {
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving tutorials.",
+          err.message || "Some error occurred while retrieving battles.",
       });
     });
+  }
+  catch(err){
+    res.status(500);
+res.send('some error occured');
+  }
 };
 
 exports.list = (req, res) => {
@@ -50,7 +59,7 @@ exports.list = (req, res) => {
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving tutorials.",
+          err.message || "Some error occurred while retrieving battless.",
       });
     });
 };
@@ -66,7 +75,7 @@ exports.count = (req, res) => {
     .catch((err) => {
       res.status(500).send({
         message:
-          err.message || "Some error occurred while retrieving tutorials.",
+          err.message || "Some error occurred while retrieving battless.",
       });
     });
 };
