@@ -1,6 +1,6 @@
 ﻿# Battles_node_mongo
 
-This project connects tp  mondo Db and node express for backend.
+This project connects to  mondo Db and node express for backend.
 
 starting commands
 run npm i --install all node modules
